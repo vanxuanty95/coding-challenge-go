@@ -1,5 +1,10 @@
 # Senior PHP Engineer Coding challenge
 
+## How to submit your code
+- Init git repository and commit initial code there (it is not needed to push it somewhere);
+- Create as many commits and branches as you wish;
+- Archive repository when done and send it back to us.
+
 ## Install and Run
 ### Requirements
 1. Docker/Docker Compose
@@ -48,17 +53,6 @@ __Get list of sellers__
 
 ```curl "http://localhost:8080/api/v1/sellers"```
 
-## How to submit your code
-FIXME XXX:
-- Create a separate branch for your updates in the current GitHub repository. Your branch name should follow the template:
-```
-cc_{firs name}_{last name}
-```
-- Create as many commits as you wish
-- Push your changes in the repository
-- Create Pull Request with your First and Last name as a Title and short description of which tasks were completed.
-
-
 ## Tasks to DO:
 ### Task 1
 
@@ -67,7 +61,7 @@ Currently, V1 Product object in API responses has the following structure:
 {
   "brand": "string",
   "name": "string",
-  "sellerUuid": "string",
+  "seller_uuid": "string",
   "stock": 0,
   "uuid": "string"
 }
@@ -103,7 +97,7 @@ If Product Update (PUT request) changes current Stock of the products, then the 
 **Behaviour to implement:**
 
 If Product Update (PUT request) changes current Stock of the products, then the seller of this product receives Email and/or SMS with warning.
-What type of notifications should be sent to seller SHOULD be defined as an application level configuration. You may implement this configuration as you wish (e.g.: locating this and other existing configs to some file).
+What type of notifications should be sent to seller SHOULD be defined as an application level configuration.
 
 **IMPORTANT:** Implementation of communication with 3rd party SMS providers is not needed. Instead, please create log entry with following text template:
 ```
