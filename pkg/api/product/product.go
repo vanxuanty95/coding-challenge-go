@@ -6,6 +6,5 @@ type product struct {
 	Name string           `json:"name"`
 	Brand string          `json:"brand"`
 	Stock int             `json:"stock"`
-	// FIXME XXX: Seller _ uuid
 	SellerUUID string `json:"seller_uuid"`
 }

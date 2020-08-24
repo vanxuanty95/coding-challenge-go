@@ -30,11 +30,11 @@ __Get a page of products__
 
 __Get a product__
 
-```curl "http://localhost:8080/api/v1/product?id=156c771c-f563-11e9-94e7-38baf859afa1"```
+```curl "curl "http://localhost:8080/api/v1/product?id=8bc12dec-e2f5-11ea-b308-0242acf00a02"```
 
 __Create a product__
 
-```curl -X POST  -d '{"name":"LED Shoes","brand":"Niko","stock":11,"seller":"1569d479-f563-11e9-94e7-38baf859afa1"}' localhost:8080/api/v1/product```
+```curl -X POST  -d '{"name":"LED Shoes","brand":"Niko","stock":11,"seller":"8bbf3c90-e2f5-11ea-b308-0242acf00a02"}' localhost:8080/api/v1/product```
 
 __Update a product__
 

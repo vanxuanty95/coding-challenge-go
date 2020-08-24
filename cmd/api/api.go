@@ -5,14 +5,26 @@ import (
 	"os"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-)
+	"database/sql"
+	_ "github.com/go-sql-driver/mysql")
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixMs
-	engine, err := api.CreateAPIEngine()
+
+	db, err := sql.Open("mysql", "user:password@tcp(db:3306)/product")
 
 	if err != nil {
 		log.Error().Err(err).Msg("Fail to create server")
+		return
+	}
+
+	defer db.Close()
+
+	engine, err := api.CreateAPIEngine(db)
+
+	if err != nil {
+		log.Error().Err(err).Msg("Fail to create server")
+		return
 	}
 
 	log.Info().Msg("Start server")

@@ -3,10 +3,10 @@ package product
 import (
 	"coding-challenge-go/pkg/api/seller"
 	"encoding/json"
-	"errors"
 	"github.com/gin-gonic/gin"
-	"net/http"
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
+	"net/http"
 )
 
 const (
@@ -37,11 +37,19 @@ func (pc *controller) List(c *gin.Context) {
 		return
 	}
 
-	products := pc.repository.list((request.Page - 1) * LIST_PAGE_SIZE, LIST_PAGE_SIZE)
+	products, err  := pc.repository.list((request.Page - 1) * LIST_PAGE_SIZE, LIST_PAGE_SIZE)
+
+	if err != nil {
+		log.Error().Err(err).Msg("Fail to query product list")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to query product list"})
+		return
+	}
+
 	productsJson, err := json.Marshal(products)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Error().Err(err).Msg("Fail to marshal products")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to marshal products"})
 		return
 	}
 
@@ -58,11 +66,19 @@ func (pc *controller) Get(c *gin.Context) {
 		return
 	}
 
-	product := pc.repository.findByUUID(request.UUID)
+	product, err := pc.repository.findByUUID(request.UUID)
+
+	if err != nil {
+		log.Error().Err(err).Msg("Fail to query product by uuid")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to query product by uuid"})
+		return
+	}
+
 	productJson, err := json.Marshal(product)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Error().Err(err).Msg("Fail to marshal product")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to marshal product"})
 		return
 	}
 
@@ -82,10 +98,16 @@ func (pc *controller) Post(c *gin.Context) {
 		return
 	}
 
-	seller := pc.sellerRepository.FindByUUID(request.Seller)
+	seller, err := pc.sellerRepository.FindByUUID(request.Seller)
+
+	if err != nil {
+		log.Error().Err(err).Msg("Fail to query seller by UUID")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to query seller by UUID"})
+		return
+	}
 
 	if seller == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": errors.New("Seller is not found")})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Seller is not found"})
 		return
 	}
 
@@ -97,11 +119,19 @@ func (pc *controller) Post(c *gin.Context) {
 		SellerUUID:    seller.UUID,
 	}
 
-	pc.repository.insert(product)
+	err = pc.repository.insert(product)
+
+	if err != nil {
+		log.Error().Err(err).Msg("Fail to insert product")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to insert product"})
+		return
+	}
+
 	jsonData, err := json.Marshal(product)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Error().Err(err).Msg("Fail to marshal product")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to marshal product"})
 		return
 	}
 
@@ -118,7 +148,13 @@ func (pc *controller) Put(c *gin.Context) {
 		return
 	}
 
-	product := pc.repository.findByUUID(queryRequest.UUID)
+	product, err := pc.repository.findByUUID(queryRequest.UUID)
+
+	if err != nil {
+		log.Error().Err(err).Msg("Fail to query product by uuid")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to query product by uuid"})
+		return
+	}
 
 	request := &struct {
 		Name string `form:"name"`
@@ -137,17 +173,31 @@ func (pc *controller) Put(c *gin.Context) {
 	product.Brand = request.Brand
 	product.Stock = request.Stock
 
-	pc.repository.update(product)
+	err = pc.repository.update(product)
+
+	if err != nil {
+		log.Error().Err(err).Msg("Fail to insert product")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to insert product"})
+		return
+	}
 
 	if oldStock != product.Stock {
-		seller := pc.sellerRepository.FindByUUID(product.SellerUUID)
+		seller, err := pc.sellerRepository.FindByUUID(product.SellerUUID)
+
+		if err != nil {
+			log.Error().Err(err).Msg("Fail to query seller by UUID")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to query seller by UUID"})
+			return
+		}
+
 		pc.sellerEmailProvider.StockChanged(oldStock, product.Stock, seller.Email)
 	}
 
 	jsonData, err := json.Marshal(product)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Error().Err(err).Msg("Fail to marshal product")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to marshal product"})
 		return
 	}
 
@@ -164,13 +214,26 @@ func (pc *controller) Delete(c *gin.Context) {
 		return
 	}
 
-	product := pc.repository.findByUUID(request.UUID)
+	product, err := pc.repository.findByUUID(request.UUID)
 
-	if product == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": errors.New("Product is not found")})
+	if err != nil {
+		log.Error().Err(err).Msg("Fail to query product by uuid")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to query product by uuid"})
 		return
 	}
 
-	pc.repository.delete(product)
+	if product == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Product is not found"})
+		return
+	}
+
+	err = pc.repository.delete(product)
+
+	if err != nil {
+		log.Error().Err(err).Msg("Fail to delete product")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to delete product"})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{})
 }

@@ -3,6 +3,7 @@ package seller
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 	"net/http"
 )
 
@@ -17,11 +18,19 @@ type controller struct {
 }
 
 func (pc *controller) List(c *gin.Context) {
-	sellers := pc.repository.list()
+	sellers, err := pc.repository.list()
+
+	if err != nil {
+		log.Error().Err(err).Msg("Fail to query seller list")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to query seller list"})
+		return
+	}
+
 	sellersJson, err := json.Marshal(sellers)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Error().Err(err).Msg("Fail to marshal sellers")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Fail to marshal sellers"})
 		return
 	}
 

@@ -3,16 +3,17 @@ package api
 import (
 	"coding-challenge-go/pkg/api/product"
 	"coding-challenge-go/pkg/api/seller"
+	"database/sql"
 	"github.com/gin-gonic/gin"
 )
 
 // CreateAPIEngine creates engine instance that serves API endpoints,
 // consider it as a router for incoming requests.
-func CreateAPIEngine() (*gin.Engine, error) {
+func CreateAPIEngine(db *sql.DB) (*gin.Engine, error) {
 	r := gin.New()
 	v1 := r.Group("api/v1")
-	productRepository := product.NewRepository()
-	sellerRepository := seller.NewRepository()
+	productRepository := product.NewRepository(db)
+	sellerRepository := seller.NewRepository(db)
 	emailProvider := seller.NewEmailProvider()
 	productController := product.NewController(productRepository, sellerRepository, emailProvider)
 	v1.GET("products", productController.List)
