@@ -1,4 +1,4 @@
-# Senior PHP Engineer Coding challenge
+# Software Engineer Coding challenge
 
 ## How to submit your code
 - Init git repository and commit initial code there (it is not needed to push it somewhere);
