@@ -34,7 +34,7 @@ __Get a product__
 
 __Create a product__
 
-```curl -X POST  -d '{"seller":"1569cbcc-f563-11e9-94e7-38baf859afa1","name":"LED Shoes","brand":"Niko","stock":11,"seller":"1569d479-f563-11e9-94e7-38baf859afa1"}' localhost:8080/api/v1/product```
+```curl -X POST  -d '{"name":"LED Shoes","brand":"Niko","stock":11,"seller":"1569d479-f563-11e9-94e7-38baf859afa1"}' localhost:8080/api/v1/product```
 
 __Update a product__
 
@@ -49,6 +49,7 @@ __Get list of sellers__
 ```curl "http://localhost:8080/api/v1/sellers"```
 
 ## How to submit your code
+FIXME XXX:
 - Create a separate branch for your updates in the current GitHub repository. Your branch name should follow the template:
 ```
 cc_{firs name}_{last name}
