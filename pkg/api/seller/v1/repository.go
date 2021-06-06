@@ -2,6 +2,11 @@ package v1
 
 import "database/sql"
 
+const (
+	FIND_BY_UUID_QUERY = "SELECT id_seller, name, email, phone, uuid FROM seller WHERE uuid = ?"
+	LIST_QUERY         = "SELECT id_seller, name, email, phone, uuid FROM seller"
+)
+
 func NewRepository(db *sql.DB) *Repository {
 	return &Repository{db: db}
 }
@@ -11,7 +16,7 @@ type Repository struct {
 }
 
 func (r *Repository) FindByUUID(uuid string) (*Seller, error) {
-	rows, err := r.db.Query("SELECT id_seller, name, email, phone, uuid FROM seller WHERE uuid = ?", uuid)
+	rows, err := r.db.Query(FIND_BY_UUID_QUERY, uuid)
 
 	if err != nil {
 		return nil, err
@@ -35,7 +40,7 @@ func (r *Repository) FindByUUID(uuid string) (*Seller, error) {
 }
 
 func (r *Repository) list() ([]*Seller, error) {
-	rows, err := r.db.Query("SELECT id_seller, name, email, phone, uuid FROM seller")
+	rows, err := r.db.Query(LIST_QUERY)
 
 	if err != nil {
 		return nil, err

@@ -35,7 +35,7 @@ func (pc *controller) TopSeller(c *gin.Context) {
 		numberParse, err := strconv.Atoi(numberAsString)
 		if err != nil {
 			pc.gdgLogger.Errorln(dictionary.TopSellerMustANumber, err)
-			c.JSON(http.StatusInternalServerError, errorResponse{ErrorMessage: dictionary.TopSellerMustANumber})
+			c.JSON(http.StatusBadRequest, errorResponse{ErrorMessage: dictionary.TopSellerMustANumber})
 			return
 		}
 		number = numberParse
@@ -43,7 +43,7 @@ func (pc *controller) TopSeller(c *gin.Context) {
 
 	if number <= 0 {
 		pc.gdgLogger.Error(dictionary.TopSellerMustGreaterThan0)
-		c.JSON(http.StatusInternalServerError, errorResponse{ErrorMessage: dictionary.TopSellerMustGreaterThan0})
+		c.JSON(http.StatusBadRequest, errorResponse{ErrorMessage: dictionary.TopSellerMustGreaterThan0})
 		return
 	}
 

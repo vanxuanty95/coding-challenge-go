@@ -4,6 +4,16 @@ import (
 	"database/sql"
 )
 
+const (
+	DELETE_QUERY = "DELETE FROM product WHERE uuid = ?"
+	INSERT_QUERY = "INSERT INTO product (id_product, name, brand, stock, fk_seller, uuid) VALUES(?,?,?,?,(SELECT id_seller FROM seller WHERE uuid = ?),?)"
+	UPDATE_QUERY = "UPDATE product SET name = ?, brand = ?, stock = ? WHERE uuid = ?"
+	LIST_QUERY   = "SELECT p.id_product, p.name, p.brand, p.stock, s.uuid, p.uuid FROM product p " +
+		"INNER JOIN seller s ON(s.id_seller = p.fk_seller) LIMIT ? OFFSET ?"
+	FIND_BY_UUID_QUERY = "SELECT p.id_product, p.name, p.brand, p.stock, s.uuid, p.uuid FROM product p " +
+		"INNER JOIN seller s ON(s.id_seller = p.fk_seller) WHERE p.uuid = ?"
+)
+
 func NewRepository(db *sql.DB) *Repository {
 	return &Repository{db: db}
 }
@@ -13,7 +23,7 @@ type Repository struct {
 }
 
 func (r *Repository) delete(product *product) error {
-	rows, err := r.db.Query("DELETE FROM product WHERE uuid = ?", product.UUID)
+	rows, err := r.db.Query(DELETE_QUERY, product.UUID)
 
 	if err != nil {
 		return err
@@ -26,7 +36,7 @@ func (r *Repository) delete(product *product) error {
 
 func (r *Repository) insert(product *product) error {
 	rows, err := r.db.Query(
-		"INSERT INTO product (id_product, name, brand, stock, fk_seller, uuid) VALUES(?,?,?,?,(SELECT id_seller FROM seller WHERE uuid = ?),?)",
+		INSERT_QUERY,
 		product.ProductID, product.Name, product.Brand, product.Stock, product.SellerUUID, product.UUID,
 	)
 
@@ -41,7 +51,7 @@ func (r *Repository) insert(product *product) error {
 
 func (r *Repository) update(product *product) error {
 	rows, err := r.db.Query(
-		"UPDATE product SET name = ?, brand = ?, stock = ? WHERE uuid = ?",
+		UPDATE_QUERY,
 		product.Name, product.Brand, product.Stock, product.UUID,
 	)
 
@@ -56,8 +66,7 @@ func (r *Repository) update(product *product) error {
 
 func (r *Repository) list(offset int, limit int) ([]*product, error) {
 	rows, err := r.db.Query(
-		"SELECT p.id_product, p.name, p.brand, p.stock, s.uuid, p.uuid FROM product p "+
-			"INNER JOIN seller s ON(s.id_seller = p.fk_seller) LIMIT ? OFFSET ?",
+		LIST_QUERY,
 		limit, offset,
 	)
 
@@ -86,8 +95,7 @@ func (r *Repository) list(offset int, limit int) ([]*product, error) {
 
 func (r *Repository) findByUUID(uuid string) (*product, error) {
 	rows, err := r.db.Query(
-		"SELECT p.id_product, p.name, p.brand, p.stock, s.uuid, p.uuid FROM product p "+
-			"INNER JOIN seller s ON(s.id_seller = p.fk_seller) WHERE p.uuid = ?",
+		FIND_BY_UUID_QUERY,
 		uuid,
 	)
 
