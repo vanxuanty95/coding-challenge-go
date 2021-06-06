@@ -1,0 +1,24 @@
+restful_api:
+  host: "localhost"
+  port: "8080"
+db:
+  host: "db"
+  port: "3306"
+  database: "product"
+  username: "user"
+  password: "password"
+seller:
+  notification:
+    type:
+      - "sms"
+      - "email"
+    template:
+      sms: "SMS Warning sent to {seller_UUID} (Phone: {seller_Phone}): {product_name} Product stock changed"
+      email:
+        subject: "Subject: Stock change!"
+        body: " Dear Mr./Ms./Dr. {seller_name} Product: {product_name} Product stock changed"
+        sender:
+          add: "smtp.gmail.com:587"
+          host: "smtp.gmail.com"
+          from: "testg@gmail.com"
+          password: "password"

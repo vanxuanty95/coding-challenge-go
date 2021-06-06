@@ -1,4 +1,4 @@
-package seller
+package v1
 
 import "database/sql"
 
@@ -58,4 +58,3 @@ func (r *Repository) list() ([]*Seller, error) {
 
 	return sellers, nil
 }
-
