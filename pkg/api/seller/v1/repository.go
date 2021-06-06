@@ -7,15 +7,21 @@ const (
 	LIST_QUERY         = "SELECT id_seller, name, email, phone, uuid FROM seller"
 )
 
-func NewRepository(db *sql.DB) *Repository {
-	return &Repository{db: db}
+func NewRepository(db *sql.DB) *RepositoryImpl {
+	return &RepositoryImpl{db: db}
 }
 
-type Repository struct {
+type RepositoryImpl struct {
 	db *sql.DB
 }
 
-func (r *Repository) FindByUUID(uuid string) (*Seller, error) {
+//go:generate mockgen -package v1 -destination repository_mock.go coding-challenge-go/pkg/api/seller/v1 Repository
+type Repository interface {
+	FindByUUID(uuid string) (*Seller, error)
+	list() ([]*Seller, error)
+}
+
+func (r *RepositoryImpl) FindByUUID(uuid string) (*Seller, error) {
 	rows, err := r.db.Query(FIND_BY_UUID_QUERY, uuid)
 
 	if err != nil {
@@ -39,7 +45,7 @@ func (r *Repository) FindByUUID(uuid string) (*Seller, error) {
 	return seller, nil
 }
 
-func (r *Repository) list() ([]*Seller, error) {
+func (r *RepositoryImpl) list() ([]*Seller, error) {
 	rows, err := r.db.Query(LIST_QUERY)
 
 	if err != nil {

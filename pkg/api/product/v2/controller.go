@@ -3,7 +3,6 @@ package v2
 import (
 	"coding-challenge-go/cmd/api/config"
 	"coding-challenge-go/pkg/api/dictionary"
-	"coding-challenge-go/pkg/api/seller/v2"
 	"coding-challenge-go/pkg/api/utils"
 	"coding-challenge-go/pkg/logger"
 	"encoding/json"
@@ -17,20 +16,18 @@ const (
 	SELF_LINK_KEY  = "self"
 )
 
-func NewController(cfg *config.Config, repository *Repository, sellerRepository *v2.Repository) *controller {
+func NewController(cfg *config.Config, repository Repository) *controller {
 	return &controller{
-		gdgLogger:        logger.WithPrefix("v2-product-controller"),
-		cfg:              cfg,
-		repository:       repository,
-		sellerRepository: sellerRepository,
+		gdgLogger:  logger.WithPrefix("v2-product-controller"),
+		cfg:        cfg,
+		repository: repository,
 	}
 }
 
 type controller struct {
-	gdgLogger        logger.Logger
-	cfg              *config.Config
-	repository       *Repository
-	sellerRepository *v2.Repository
+	gdgLogger  logger.Logger
+	cfg        *config.Config
+	repository Repository
 }
 
 func (pc *controller) List(c *gin.Context) {

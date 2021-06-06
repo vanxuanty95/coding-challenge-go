@@ -8,15 +8,20 @@ const (
 		"AS products ON seller.id_seller = products.fk_seller;"
 )
 
-func NewRepository(db *sql.DB) *Repository {
-	return &Repository{db: db}
+func NewRepository(db *sql.DB) *RepositoryImpl {
+	return &RepositoryImpl{db: db}
 }
 
-type Repository struct {
+type RepositoryImpl struct {
 	db *sql.DB
 }
 
-func (r *Repository) getTopSellers(top int) ([]*Seller, error) {
+//go:generate mockgen -package v2 -destination repository_mock.go coding-challenge-go/pkg/api/seller/v2 Repository
+type Repository interface {
+	getTopSellers(top int) ([]*Seller, error)
+}
+
+func (r *RepositoryImpl) getTopSellers(top int) ([]*Seller, error) {
 	rows, err := r.db.Query(TOP_SELLER_QUERY, top)
 
 	if err != nil {

@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func NewController(repository *Repository) *controller {
+func NewController(repository Repository) *controller {
 	return &controller{
 		gdgLogger:  logger.WithPrefix("v1-seller-controller"),
 		repository: repository,
@@ -18,7 +18,7 @@ func NewController(repository *Repository) *controller {
 
 type controller struct {
 	gdgLogger  logger.Logger
-	repository *Repository
+	repository Repository
 }
 
 func (pc *controller) List(c *gin.Context) {

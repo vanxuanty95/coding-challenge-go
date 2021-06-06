@@ -16,7 +16,7 @@ const (
 	LIST_PAGE_SIZE = 10
 )
 
-func NewController(repository *Repository, sellerRepository *v1Seller.Repository, notifiersFactory *helper.NotifiersFactory) *controller {
+func NewController(repository Repository, sellerRepository v1Seller.Repository, notifiersFactory *helper.NotifiersFactory) *controller {
 	return &controller{
 		gdgLogger:        logger.WithPrefix("v1-product-controller"),
 		repository:       repository,
@@ -27,8 +27,8 @@ func NewController(repository *Repository, sellerRepository *v1Seller.Repository
 
 type controller struct {
 	gdgLogger        logger.Logger
-	repository       *Repository
-	sellerRepository *v1Seller.Repository
+	repository       Repository
+	sellerRepository v1Seller.Repository
 	notifiersFactory *helper.NotifiersFactory
 }
 

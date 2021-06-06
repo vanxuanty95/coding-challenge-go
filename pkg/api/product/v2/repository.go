@@ -11,15 +11,21 @@ const (
 		"INNER JOIN seller s ON(s.id_seller = p.fk_seller) WHERE p.uuid = ?"
 )
 
-func NewRepository(db *sql.DB) *Repository {
-	return &Repository{db: db}
+func NewRepository(db *sql.DB) *RepositoryImpl {
+	return &RepositoryImpl{db: db}
 }
 
-type Repository struct {
+type RepositoryImpl struct {
 	db *sql.DB
 }
 
-func (r *Repository) list(offset int, limit int) ([]*product, error) {
+//go:generate mockgen -package v2 -destination repository_mock.go coding-challenge-go/pkg/api/product/v2 Repository
+type Repository interface {
+	list(offset int, limit int) ([]*product, error)
+	findByUUID(uuid string) (*product, error)
+}
+
+func (r *RepositoryImpl) list(offset int, limit int) ([]*product, error) {
 	rows, err := r.db.Query(LIST_QUERY, limit, offset)
 
 	if err != nil {
@@ -45,7 +51,7 @@ func (r *Repository) list(offset int, limit int) ([]*product, error) {
 	return products, nil
 }
 
-func (r *Repository) findByUUID(uuid string) (*product, error) {
+func (r *RepositoryImpl) findByUUID(uuid string) (*product, error) {
 	rows, err := r.db.Query(FIND_BY_UUID_QUERY, uuid)
 
 	if err != nil {

@@ -16,7 +16,7 @@ const (
 	TOP_SELLER_DEFAULT   = 10
 )
 
-func NewController(repository *Repository) *controller {
+func NewController(repository Repository) *controller {
 	return &controller{
 		gdgLogger:  logger.WithPrefix("v2-seller-controller"),
 		repository: repository,
@@ -25,7 +25,7 @@ func NewController(repository *Repository) *controller {
 
 type controller struct {
 	gdgLogger  logger.Logger
-	repository *Repository
+	repository Repository
 }
 
 func (pc *controller) TopSeller(c *gin.Context) {

@@ -38,11 +38,11 @@ func CreateV2API(cfg *config2.Config, r *gin.Engine, db *sql.DB) {
 	productRepository := v2Product.NewRepository(db)
 	sellerRepository := v2Seller.NewRepository(db)
 
-	CreateProductV2API(cfg, apiV2, productRepository, sellerRepository)
+	CreateProductV2API(cfg, apiV2, productRepository)
 	CreateSellerV2API(apiV2, sellerRepository)
 }
 
-func CreateProductV1API(routerGroup *gin.RouterGroup, productRepository *v1Product.Repository, sellerRepository *v1Seller.Repository, notifiersFactory *helper.NotifiersFactory) {
+func CreateProductV1API(routerGroup *gin.RouterGroup, productRepository *v1Product.RepositoryImpl, sellerRepository *v1Seller.RepositoryImpl, notifiersFactory *helper.NotifiersFactory) {
 	productController := v1Product.NewController(productRepository, sellerRepository, notifiersFactory)
 	routerGroup.GET("products", productController.List)
 	routerGroup.GET("product", productController.Get)
@@ -51,18 +51,18 @@ func CreateProductV1API(routerGroup *gin.RouterGroup, productRepository *v1Produ
 	routerGroup.DELETE("product", productController.Delete)
 }
 
-func CreateSellerV1API(routerGroup *gin.RouterGroup, sellerRepository *v1Seller.Repository) {
+func CreateSellerV1API(routerGroup *gin.RouterGroup, sellerRepository *v1Seller.RepositoryImpl) {
 	sellerController := v1Seller.NewController(sellerRepository)
 	routerGroup.GET("sellers", sellerController.List)
 }
 
-func CreateProductV2API(cfg *config2.Config, routerGroup *gin.RouterGroup, productRepository *v2Product.Repository, sellerRepository *v2Seller.Repository) {
-	productController := v2Product.NewController(cfg, productRepository, sellerRepository)
+func CreateProductV2API(cfg *config2.Config, routerGroup *gin.RouterGroup, productRepository *v2Product.RepositoryImpl) {
+	productController := v2Product.NewController(cfg, productRepository)
 	routerGroup.GET("products", productController.List)
 	routerGroup.GET("product", productController.Get)
 }
 
-func CreateSellerV2API(routerGroup *gin.RouterGroup, sellerRepository *v2Seller.Repository) {
+func CreateSellerV2API(routerGroup *gin.RouterGroup, sellerRepository *v2Seller.RepositoryImpl) {
 	sellerController := v2Seller.NewController(sellerRepository)
 	routerGroup.GET("sellers/top:number", sellerController.TopSeller)
 }

@@ -14,15 +14,24 @@ const (
 		"INNER JOIN seller s ON(s.id_seller = p.fk_seller) WHERE p.uuid = ?"
 )
 
-func NewRepository(db *sql.DB) *Repository {
-	return &Repository{db: db}
+func NewRepository(db *sql.DB) *RepositoryImpl {
+	return &RepositoryImpl{db: db}
 }
 
-type Repository struct {
+type RepositoryImpl struct {
 	db *sql.DB
 }
 
-func (r *Repository) delete(product *product) error {
+//go:generate mockgen -package v1 -destination repository_mock.go coding-challenge-go/pkg/api/product/v1 Repository
+type Repository interface {
+	delete(product *product) error
+	insert(product *product) error
+	update(product *product) error
+	list(offset int, limit int) ([]*product, error)
+	findByUUID(uuid string) (*product, error)
+}
+
+func (r *RepositoryImpl) delete(product *product) error {
 	rows, err := r.db.Query(DELETE_QUERY, product.UUID)
 
 	if err != nil {
@@ -34,7 +43,7 @@ func (r *Repository) delete(product *product) error {
 	return nil
 }
 
-func (r *Repository) insert(product *product) error {
+func (r *RepositoryImpl) insert(product *product) error {
 	rows, err := r.db.Query(
 		INSERT_QUERY,
 		product.ProductID, product.Name, product.Brand, product.Stock, product.SellerUUID, product.UUID,
@@ -49,7 +58,7 @@ func (r *Repository) insert(product *product) error {
 	return nil
 }
 
-func (r *Repository) update(product *product) error {
+func (r *RepositoryImpl) update(product *product) error {
 	rows, err := r.db.Query(
 		UPDATE_QUERY,
 		product.Name, product.Brand, product.Stock, product.UUID,
@@ -64,7 +73,7 @@ func (r *Repository) update(product *product) error {
 	return nil
 }
 
-func (r *Repository) list(offset int, limit int) ([]*product, error) {
+func (r *RepositoryImpl) list(offset int, limit int) ([]*product, error) {
 	rows, err := r.db.Query(
 		LIST_QUERY,
 		limit, offset,
@@ -93,7 +102,7 @@ func (r *Repository) list(offset int, limit int) ([]*product, error) {
 	return products, nil
 }
 
-func (r *Repository) findByUUID(uuid string) (*product, error) {
+func (r *RepositoryImpl) findByUUID(uuid string) (*product, error) {
 	rows, err := r.db.Query(
 		FIND_BY_UUID_QUERY,
 		uuid,
