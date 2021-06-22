@@ -200,7 +200,8 @@ func (pc *controller) Put(c *gin.Context) {
 		}
 
 		notificationInfo := generateNotificationInfo(seller, product, oldStock, product.Stock)
-		go pc.notifiersFactory.SendNotification(notificationInfo)
+
+		pc.notifiersFactory.SendChannel(notificationInfo)
 	}
 
 	jsonData, err := json.Marshal(product)
